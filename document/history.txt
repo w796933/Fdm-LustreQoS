@@ -1,0 +1,119 @@
+#多节点批量删除文件
+sh ctrl/multexu.sh --iptable=nodes_all.out --cmd='rm -rf /usr/src/qos'
+#多节点批量传送文件
+sh ctrl/multexu.sh --iptable=nodes_all.out --sendfile=/usr/src/qos --location=/usr/src
+#部署文件系统
+sh deploy/auto_lustre2.8.0_deploy.sh --mdsnode=192.168.3.186 --devname=/dev/sda --devindex=7
+
+#多节点批量删除旧版内核,谨慎使用
+sh ctrl/multexu.sh --iptable=nodes_all.out --cmd='rpm -aq | grep kernel'
+sh ctrl/multexu.sh --iptable=nodes_all.out --cmd='rpm -e kernel-2.6.32504.8.1.el6_lustre.x86_64-1.x86_64 -f --nodeps'
+sh ctrl/multexu.sh --iptable=nodes_all.out --cmd='yum -y remove kernel-2.6.32504.8.1.el6_lustre.x86_64-1.x86_64'
+sh ctrl/multexu.sh --iptable=nodes_all.out --cmd='yum -y remove kernel-firmware-2.6.32-358.el6.noarch'
+
+#多节点批量重启
+sh ctrl/multexu.sh --iptable=nodes_all.out --cmd=reboot
+#停掉节点中的fio进程
+sh ctrl/multexu.sh --iptable=nodes_all.out --cmd="kill -9 $(pidof fio)"
+
+#多节点批量删除文件
+sh ctrl/multexu.sh --iptable=nodes_all.out --cmd='rm -rf /home/qos/Fdm-LustreQoS'
+#多节点批量建立文件夹
+sh ctrl/multexu.sh --iptable=nodes_all.out --cmd='mkdir /home/qos'
+#多节点批量传送文件
+sh ctrl/multexu.sh --iptable=nodes_all.out --sendfile=/home/qos/Fdm-LustreQoS --location=/home/qos/
+
+cd /home/centos/Development/project/Fdm-LustreQoS/batch/
+sh ctrl/multexu.sh --iptable=nodes_all.out --cmd='cat /home/centos/Development/project/Fdm-LustreQoS/batch/config/multexu.tmp'
+
+sh ctrl/multexu.sh --iptable=nodes_all.out --sendfile=/home/centos/Development/project/Fdm-LustreQoS --location=/home/centos/Development/project
+
+#lustre 单节点上文件系统部署相关命令
+mkfs.lustre --fsname=lustrefs --mgs --mdt --index=0 /dev/sda3
+mkfs.lustre --fsname=lustrefs --mdsnode=192.168.3.186@tcp --ost --index=0 /dev/sda7
+mount -t lustre /dev/sda3 /mnt/lustre
+mkdir /mnt/ost1 && mount -t lustre /dev/sda7 /mnt/ost1/
+#xshell传送文件软件安装
+yum install lrzsz
+
+#安装lmt
+yum -y install libtool-ltdl-devel glibc-common libtool autoconf automake mysql-devel expat-devel 
+yum -y install openssl098e
+yum -y install perl-Date-Manip
+# restart Cerebro on  Lustre servers
+sh ctrl/multexu.sh --iptable=nodes_server.out --cmd='/sbin/service cerebrod restart'
+#centos7修改主机名
+hostnamectl --static set-hostname
+
+echo 192.168.3.161 ca01 ca01 >> /etc/hosts
+echo 192.168.3.164 ca04 ca04 >> /etc/hosts
+echo 192.168.3.181 ca21 ca21 >> /etc/hosts
+echo 192.168.3.186 ca26 ca26 >> /etc/hosts
+echo 192.168.3.208 bd08 bd08 >> /etc/hosts
+echo 192.168.3.123 de03 de03 >> /etc/hosts
+
+touch /etc/hostsfile
+echo ca01 >> /etc/hostsfile
+echo ca04 >> /etc/hostsfile
+echo ca21 >> /etc/hostsfile
+echo ca26 >> /etc/hostsfile
+echo bd08 >> /etc/hostsfile
+echo de03 >> /etc/hostsfile
+
+sh ctrl/multexu.sh --iptable=nodes_server.out --cmd='cd /home/qos/Fdm-LustreQoS/source/lmt/ && rpm -ivh cerebro-1.12-1.x86_64.rpm'
+sh ctrl/multexu.sh --iptable=nodes_server.out --cmd='cd /home/qos/Fdm-LustreQoS/source/lmt/ && rpm -ivh cerebro-clusterlist-hostsfile-1.12-1.x86_64.rpm'
+sh ctrl/multexu.sh --iptable=nodes_server.out --cmd='cd /home/qos/Fdm-LustreQoS/source/lmt/ && rpm -ivh cerebro-metric-boottime-1.12-1.x86_64.rpm'
+sh ctrl/multexu.sh --iptable=nodes_server.out --cmd='cd /home/qos/Fdm-LustreQoS/source/lmt/ && rpm -ivh cerebro-metric-loadavg-1.12-1.x86_64.rpm'
+sh ctrl/multexu.sh --iptable=nodes_server.out --cmd='cd /home/qos/Fdm-LustreQoS/source/lmt/ && rpm -ivh cerebro-metric-memory-1.12-1.x86_64.rpm'
+sh ctrl/multexu.sh --iptable=nodes_server.out --cmd='cd /home/qos/Fdm-LustreQoS/source/lmt/ && rpm -ivh cerebro-metric-network-1.12-1.x86_64.rpm'
+sh ctrl/multexu.sh --iptable=nodes_server.out --cmd='cd /home/qos/Fdm-LustreQoS/source/lmt/ && rpm -ivh cerebro-event-updown-1.12-1.x86_64.rpm'
+
+lctl set_param ost.OSS.ost_io.nrs_tbf_rule="start computenodes{192.168.3.161@tcp} 1000"
+
+lctl set_param ost.OSS.ost_io.nrs_tbf_rule="start fio_user0 {qos_test.0} 1000"
+
+cd /home/qos/Fdm-LustreQoS/batch
+scp root@192.168.122.101:/home/qos/Fdm-LustreQoS/source/install/* /home/qos/Fdm-LustreQoS/source/install/
+scp -rp root@192.168.3.181:/home/qos/Fdm-LustreQoS /home/qos/
+sh ctrl/multexu.sh --iptable=nodes_all.out --cmd='rm -rf /home/qos/Fdm-LustreQoS'
+sh ctrl/multexu.sh --iptable=nodes_all.out --sendfile=/home/qos/Fdm-LustreQoS --location=/home/qos/
+sh ctrl/multexu.sh --iptable=nodes_all.out --cmd='echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts'
+sh ctrl/multexu.sh --iptable=nodes_all.out --cmd='echo "::1         localhost localhost.localdomain localhost6 localhost6.localdomain6" >> /etc/hosts'
+sh ctrl/multexu.sh --iptable=nodes_all.out --cmd='rm -f /etc/hostfile && touch /etc/hostfile'
+
+rm -f /home/qos/Fdm-LustreQoS/source/install/lustre-*
+rm -rf /root/kernel/rpmbuild/BUILD/lustre-2.8.0/*
+cp /root/kernel/rpmbuild/BUILD/lustre-2.8.0/*.rpm /home/qos/Fdm-LustreQoS/source/install/
+
+
+echo yes | cp /home/ca21/DevelopmentFiles/centos7-c1.qcow2 /home/ca21/Downloads/
+echo yes | cp /home/ca21/DevelopmentFiles/centos7-c2.qcow2 /home/ca21/Downloads/
+echo yes | cp /home/ca21/DevelopmentFiles/centos7-c3.qcow2 /home/ca21/Downloads/
+echo yes | cp /home/ca21/DevelopmentFiles/centos7-c4.qcow2 /home/ca21/Downloads/
+echo yes | cp /home/ca21/DevelopmentFiles/centos7-c5.qcow2 /home/ca21/Downloads/
+echo yes | cp /home/ca21/DevelopmentFiles/centos7-c6.qcow2 /home/ca21/Downloads/
+echo yes | cp /home/ca21/DevelopmentFiles/centos7-c7.qcow2 /home/ca21/Downloads/
+
+rpm -e lustre-osd-ldiskfs-mount-2.8.0-3.10.0_3.10.0_327.3.1.el7_lustre.x86_64.x86_64 -f --nodeps
+rpm -e lustre-modules-2.8.0-3.10.0_3.10.0_327.3.1.el7_lustre.x86_64.x86_64 -f --nodeps
+rpm -e pcp-pmda-lustre-3.10.6-2.el7.x86_64 -f --nodeps
+rpm -e pcp-pmda-lustrecomm-3.10.6-2.el7.x86_64 -f --nodeps
+rpm -e lustre-osd-ldiskfs-2.8.0-3.10.0_3.10.0_327.3.1.el7_lustre.x86_64.x86_64 -f --nodeps
+rpm -e lustre-2.8.0-3.10.0_3.10.0_327.3.1.el7_lustre.x86_64.x86_64 -f --nodeps
+
+sh build/build_lustre_server.sh --skip_install_dependency=1
+hostnamectl --static set-hostname qosnode7
+service network restart
+sh ctrl/multexu.sh --iptable=nodes_server.out --cmd='/etc/init.d/cerebrod restart'
+
+sh /home/qos/Fdm-LustreQoS/batch/ctrl/multexu.sh --iptable=nodes_all.out --cmd='rm -rf /home/qos/Fdm-LustreQoS'
+sleep 30s
+sh /home/qos/Fdm-LustreQoS/batch/ctrl/multexu.sh --iptable=nodes_all.out --sendfile=/home/qos/Fdm-LustreQoS --location=/home/qos/
+sleep 300s
+sh /home/qos/Fdm-LustreQoS/batch/install/auto_lustre2.8.0_install.sh
+sleep 1800s
+sh /home/qos/Fdm-LustreQoS/batch/deploy/auto_lustre2.8.0_deploy.sh --mdsnode=192.168.122.15 --devname=/dev/vda --devindex=7
+sleep 1800s
+sh /home/qos/Fdm-LustreQoS/batch/lmt/lmt_install.sh --mdsnode=192.168.122.15
+
+

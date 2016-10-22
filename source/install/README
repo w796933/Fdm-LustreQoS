@@ -1,0 +1,22 @@
+本文件夹下是已经编译好可以直接用于安装的rpm包
+注：
+	e2fsprogs-1.42.13.wc5-7.el7.x86_64.rpm
+    e2fsprogs-libs-1.42.13.wc5-7.el7.x86_64.rpm
+    libcom_err-1.42.13.wc5-7.el7.x86_64.rpm
+    libss-1.42.13.wc5-7.el7.x86_64.rpm
+四个文件是下载的，根据实际情况下载对应的版本
+其它文件均为编译自动生成
+编译环境
+[root@localhost lustre-2.8.0]# gcc -v
+Using built-in specs.
+COLLECT_GCC=gcc
+COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/4.8.5/lto-wrapper
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++,objc,obj-c++,java,fortran,ada,go,lto --enable-plugin --enable-initfini-array --disable-libgcj --with-isl=/builddir/build/BUILD/gcc-4.8.5-20150702/obj-x86_64-redhat-linux/isl-install --with-cloog=/builddir/build/BUILD/gcc-4.8.5-20150702/obj-x86_64-redhat-linux/cloog-install --enable-gnu-indirect-function --with-tune=generic --with-arch_32=x86-64 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.8.5 20150623 (Red Hat 4.8.5-4) (GCC) 
+
+[root@localhost lustre-2.8.0]# uname -a
+Linux localhost.localdomain 3.10.0-3.10.0-327.3.1.el7_lustre.x86_64 #1 SMP Sat Sep 3 16:07:42 CST 2016 x86_64 x86_64 x86_64 GNU/Linux
+[root@localhost lustre-2.8.0]# 
+
