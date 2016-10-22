@@ -31,7 +31,6 @@ while getopts 's:' opt;do
 done
 #配置metric-server 
 sed -i "s/# cerebro_metric_server localhost/cerebro_metric_server ${mdsnode}/g" /etc/cerebro.conf
-
 #配置event-server
 for host_ip in $(cat ${MULTEXU_BATCH_CONFIG_DIR}/nodes_server.out)
 do
