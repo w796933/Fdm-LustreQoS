@@ -118,8 +118,8 @@ wait
 cd "${BUILD_BASE_DIR}"/BUILD/lustre-2.8.0/
 
 print_message "MULTEXU_INFO" "now start to patch the lustre ..."
-patch -p1 < ${MULTEXU_SOURCE_DIR}/build/lustre_nrs_sscdt.patch
-patch -p1 < ${MULTEXU_SOURCE_DIR}/build/lustre_qos.patch
+#patch -p1 < ${MULTEXU_SOURCE_DIR}/build/lustre_nrs_sscdt.patch
+#patch -p1 < ${MULTEXU_SOURCE_DIR}/build/lustre_qos.patch
 `${PAUSE_CMD}`
 print_message "MULTEXU_INFO" "now start to patch files for metric ..."
 sh ${MULTEXU_BATCH_BUILD_DIR}/_patch_metric.sh

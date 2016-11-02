@@ -26,8 +26,11 @@ else
 	`${PAUSE_CMD}`
 fi
 source "${MULTEXU_BATCH_CRTL_DIR}"/multexu_lib.sh #调入multexu库
-yum -y remove mariadb-libs
 
+cd "${MULTEXU_SOURCE_DIR}"/lmt
+print_message "MULTEXU_INFO" "enter directory ${MULTEXU_SOURCE_DIR}/lmt..."
+
+yum -y remove mariadb-libs
 wait
 rpm -ivh MySQL-shared-compat*.rpm
 wait

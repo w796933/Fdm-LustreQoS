@@ -70,32 +70,32 @@ done
 `${PAUSE_CMD}`
 
 #清除信号量  避免干扰
-sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_server.out --cmd="sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --clear_execute_statu_signal"
-print_message "MULTEXU_INFO" "the nodes which its ip in nodes_server.out are going to install mysql..."
-sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_server.out --cmd="sh ${MULTEXU_BATCH_LMT_DIR}/_mysql_install.sh"
-ssh_check_cluster_status "nodes_server.out" "${MULTEXU_STATUS_EXECUTE}" ${sleeptime} ${limit}
-print_message "MULTEXU_INFO" "the nodes which its ip in nodes_server.out finished to install mysql..."
+sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_all.out --cmd="sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --clear_execute_statu_signal"
+print_message "MULTEXU_INFO" "the nodes which its ip in nodes_all.out are going to install mysql..."
+sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_all.out --cmd="sh ${MULTEXU_BATCH_LMT_DIR}/_mysql_install.sh"
+ssh_check_cluster_status "nodes_all.out" "${MULTEXU_STATUS_EXECUTE}" ${sleeptime} ${limit}
+print_message "MULTEXU_INFO" "the nodes which its ip in nodes_all.out finished to install mysql..."
 
 #清除信号量  避免干扰
-sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_server.out --cmd="sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --clear_execute_statu_signal"
-print_message "MULTEXU_INFO" "the nodes which its ip in nodes_server.out are going to install cerebro..."
-sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_server.out --cmd="sh ${MULTEXU_BATCH_LMT_DIR}/_cerebro_install.sh"
-ssh_check_cluster_status "nodes_server.out" "${MULTEXU_STATUS_EXECUTE}" ${sleeptime} ${limit}
-print_message "MULTEXU_INFO" "the nodes which its ip in nodes_server.out finished to install cerebro..."
+sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_all.out --cmd="sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --clear_execute_statu_signal"
+print_message "MULTEXU_INFO" "the nodes which its ip in nodes_all.out are going to install cerebro..."
+sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_all.out --cmd="sh ${MULTEXU_BATCH_LMT_DIR}/_cerebro_install.sh"
+ssh_check_cluster_status "nodes_all.out" "${MULTEXU_STATUS_EXECUTE}" ${sleeptime} ${limit}
+print_message "MULTEXU_INFO" "the nodes which its ip in nodes_all.out finished to install cerebro..."
 
 #清除信号量  避免干扰
-sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_server.out --cmd="sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --clear_execute_statu_signal"
-print_message "MULTEXU_INFO" "the nodes which its ip in nodes_server.out are going to install lmt-server-agent..."
-sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_server.out --cmd="sh ${MULTEXU_BATCH_LMT_DIR}/_lmt_install.sh --server-agent"
-ssh_check_cluster_status "nodes_server.out" "${MULTEXU_STATUS_EXECUTE}" ${sleeptime} ${limit}
-print_message "MULTEXU_INFO" "the nodes which its ip in nodes_server.out finished to install lmt-server-agent..."
+sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_all.out --cmd="sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --clear_execute_statu_signal"
+print_message "MULTEXU_INFO" "the nodes which its ip in nodes_all.out are going to install lmt-server-agent..."
+sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_all.out --cmd="sh ${MULTEXU_BATCH_LMT_DIR}/_lmt_install.sh --server-agent"
+ssh_check_cluster_status "nodes_all.out" "${MULTEXU_STATUS_EXECUTE}" ${sleeptime} ${limit}
+print_message "MULTEXU_INFO" "the nodes which its ip in nodes_all.out finished to install lmt-server-agent..."
 
 #清除信号量  避免干扰
-sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_server.out --cmd="sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --clear_execute_statu_signal"
-print_message "MULTEXU_INFO" "the nodes which its ip in nodes_server.out are going to configure /etc/host && /etc/hostfile..."
-sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_server.out --cmd="sh ${MULTEXU_BATCH_LMT_DIR}/_host_conf.sh"
-ssh_check_cluster_status "nodes_server.out" "${MULTEXU_STATUS_EXECUTE}" ${sleeptime} ${limit}
-print_message "MULTEXU_INFO" "the nodes which its ip in nodes_server.out finished to  configure /etc/host && /etc/hostfile..."
+sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_all.out --cmd="sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --clear_execute_statu_signal"
+print_message "MULTEXU_INFO" "the nodes which its ip in nodes_all.out are going to configure /etc/host && /etc/hostfile..."
+sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_all.out --cmd="sh ${MULTEXU_BATCH_LMT_DIR}/_host_conf.sh"
+ssh_check_cluster_status "nodes_all.out" "${MULTEXU_STATUS_EXECUTE}" ${sleeptime} ${limit}
+print_message "MULTEXU_INFO" "the nodes which its ip in nodes_all.out finished to  configure /etc/host && /etc/hostfile..."
 
 
 #没有显式给出Lustre Monitoring Tool management node就默认当前节点为Lustre Monitoring Tool management node
@@ -131,33 +131,38 @@ if [ ! -n "${lmt_mgnode}" ]; then
 	
 	sh ${MULTEXU_BATCH_LMT_DIR}/_configure_cerebro_conf.sh -s ${mdsnode}
     
-    #重启cerebrod
-    /sbin/service cerebrod restart
-	
 else
     #清除信号量  避免干扰
 	sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=${lmt_mgnode} --cmd="sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --clear_execute_statu_signal"
 	print_message "MULTEXU_INFO" "the node ${lmt_mgnode} is going to install mysql..."
 	sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=${lmt_mgnode} --cmd="sh ${MULTEXU_BATCH_LMT_DIR}/_mysql_install.sh"
-	ssh_check_cluster_status "nodes_server.out" "${MULTEXU_STATUS_EXECUTE}" ${sleeptime} ${limit}
+	ssh_check_singlenode_status ${lmt_mgnode} "${MULTEXU_STATUS_EXECUTE}" ${sleeptime} ${limit}
 	print_message "MULTEXU_INFO" "the node ${lmt_mgnode} finished to install mysql..."
 
 	#清除信号量  避免干扰
 	sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=${lmt_mgnode} --cmd="sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --clear_execute_statu_signal"
 	print_message "MULTEXU_INFO" "the node ${lmt_mgnode} is going to install cerebro..."
 	sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=${lmt_mgnode} --cmd="sh ${MULTEXU_BATCH_LMT_DIR}/_cerebro_install.sh"
-	ssh_check_cluster_status "nodes_server.out" "${MULTEXU_STATUS_EXECUTE}" ${sleeptime} ${limit}
+	ssh_check_singlenode_status ${lmt_mgnode} "${MULTEXU_STATUS_EXECUTE}" ${sleeptime} ${limit}
 	print_message "MULTEXU_INFO" "the node ${lmt_mgnode} finished to install cerebro..."
 
 	#清除信号量  避免干扰
 	sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=${lmt_mgnode} --cmd="sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --clear_execute_statu_signal"
 	print_message "MULTEXU_INFO" "the node ${lmt_mgnode} is going to install lmt-server..."
 	sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=${lmt_mgnode} --cmd="sh ${MULTEXU_BATCH_LMT_DIR}/_lmt_install.sh --server"
-	ssh_check_cluster_status "nodes_server.out" "${MULTEXU_STATUS_EXECUTE}" ${sleeptime} ${limit}
+	ssh_check_singlenode_status ${lmt_mgnode} "${MULTEXU_STATUS_EXECUTE}" ${sleeptime} ${limit}
 	print_message "MULTEXU_INFO" "the node ${lmt_mgnode} finished to install lmt-server..."
 	
 	sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=${lmt_mgnode} --cmd="sh ${MULTEXU_BATCH_LMT_DIR}/_configure_cerebro_conf.sh -s ${mdsnode}"
-    
+fi
+
+ #重启cerebrod
+sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_all.out --cmd="/sbin/service cerebrod restart"
+if [ ! -n "${lmt_mgnode}" ]; then
+    #重启cerebrod
+    #/etc/init.d/cerebrod 
+    /sbin/service cerebrod restart
+else
     #重启cerebrod
     sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=${lmt_mgnode} --cmd="/sbin/service cerebrod restart"
 fi

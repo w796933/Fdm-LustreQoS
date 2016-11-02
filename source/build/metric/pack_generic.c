@@ -1735,7 +1735,7 @@ void lustre_swab_obdo (struct obdo  *o)
          */
         t = o->o_sent_time.tv_sec;
         __swab64s (&t);
-        o->o_ent_time.tv_sec = t;
+        o->o_sent_time.tv_sec = t;
         t = o->o_sent_time.tv_usec;
         __swab64s (&t);
         o->o_sent_time.tv_usec = t;
