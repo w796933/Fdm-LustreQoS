@@ -54,7 +54,7 @@ BUILD_BASE_DIR="$HOME""/kernel/rpmbuild"
 mkdir -p "${BUILD_BASE_DIR}"/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 
 cd kernel
-
+clear_execute_statu_signal
 print_message "MULTEXU_INFO" "install dependencies..."  
 
 #
@@ -176,7 +176,7 @@ print_message "MULTEXU_INFO" "1. rpm -ivh --force kernel-3.10.0_3.10.0_327.3.1.e
 print_message "MULTEXU_INFO" "2. /sbin/new-kernel-pkg --package kernel --mkinitrd --dracut --depmod --install 3.10.0-3.10.0-327.3.1.el7_lustre.x86_64"
 print_message "MULTEXU_INFO" "3. reboot"
 print_message "MULTEXU_INFO" "now you can run the script build_lustre[server/client].sh..."
-
+send_execute_statu_signal "${MULTEXU_STATUS_EXECUTE}"
 exit 0
 
 

@@ -16,7 +16,8 @@ else
 fi
 
 source "${MULTEXU_BATCH_CRTL_DIR}"/multexu_lib.sh #调入multexu库
-                                                                 
+
+clear_execute_statu_signal                                                                 
 print_message "MULTEXU_INFO" "install dependencies..."                                       
 cd "${MULTEXU_SOURCE_DIR}"/install
 print_message "MULTEXU_INFO" "enter directory ${MULTEXU_SOURCE_DIR}/install..."
@@ -31,7 +32,7 @@ wait
 #yum clean all &&yum update glibc glibc-headers glibc-devel nscd && yum update
 wait
 
-clear_execute_statu_signal
+
 send_execute_statu_signal "${MULTEXU_STATUS_EXECUTE}"
 print_message "MULTEXU_INFO" "leave directory $( dirname "${BASH_SOURCE[0]}" )..."
 print_message "MULTEXU_INFO" "all jobs finished"

@@ -27,6 +27,7 @@ source "${MULTEXU_BATCH_CRTL_DIR}/multexu_lib.sh"
 #
 cd $HOME
 
+clear_execute_statu_signal
 BUILD_BASE_DIR="$HOME""/kernel/rpmbuild"
 #grep -Ri 'intel' /usr
 #rpm -ivh $PKG_PATH/kernel-*.rpm
@@ -106,8 +107,6 @@ if [ ${skip_install_dependency} -eq 0 ];then
     rpm -ivh ${MULTEXU_SOURCE_DIR}/build/epel-release-7-8.noarch.rpm 
 fi
 
-
-print_message "MULTEXU_INFO" "Now start to rpmbuild kernel ..."
 echo '%_topdir %(echo $HOME)/kernel/rpmbuild' > ~/.rpmmacros
 rpm -ivh ${MULTEXU_SOURCE_DIR}/build/lustre-2.8.0-3.10.0_327.3.1.el7_lustre.x86_64.src.rpm  2>&1 | grep -v exist
 wait
@@ -135,4 +134,6 @@ cd "${BUILD_BASE_DIR}"/BUILD/lustre-2.8.0/
 make rpms -j4
 print_message "MULTEXU_INFO" "finished to make rpms (server) ..."
 `${PAUSE_CMD}`
+
+send_execute_statu_signal "${MULTEXU_STATUS_EXECUTE}"
 exit 0

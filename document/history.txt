@@ -4,7 +4,6 @@ sh /home/development/Fdm-LustreQoS/batch/ctrl/multexu.sh --iptable=nodes_all.out
 sh /home/development/Fdm-LustreQoS/batch/ctrl/multexu.sh --iptable=nodes_all.out --sendfile=/usr/src/qos --location=/usr/src
 #部署文件系统
 sh /home/development/Fdm-LustreQoS/batch/deploy/auto_lustre2.8.0_deploy.sh --mdsnode=192.168.3.186 --devname=/dev/sda --devindex=7
-sh /home/development/Fdm-LustreQoS/batch/deploy/auto_lustre2.8.0_deploy.sh --mdsnode=192.168.122.15 --devname=/dev/vda --devindex=7
 
 #多节点批量删除旧版内核,谨慎使用
 sh /home/development/Fdm-LustreQoS/batch/ctrl/multexu.sh --iptable=nodes_all.out --cmd='rpm -aq | grep kernel'
@@ -62,7 +61,6 @@ echo yes | cp /home/ca21/DevelopmentFiles/centos7-c5.qcow2 /home/ca21/Downloads/
 echo yes | cp /home/ca21/DevelopmentFiles/centos7-c6.qcow2 /home/ca21/Downloads/
 echo yes | cp /home/ca21/DevelopmentFiles/centos7-c7.qcow2 /home/ca21/Downloads/
 
-
 echo 192.168.3.161 ca01 ca01 >> /etc/hosts
 echo 192.168.3.164 ca04 ca04 >> /etc/hosts
 echo 192.168.3.181 ca21 ca21 >> /etc/hosts
@@ -88,7 +86,6 @@ sh /home/development/Fdm-LustreQoS/batch/ctrl/multexu.sh --iptable=nodes_server.
 
 lctl set_param ost.OSS.ost_io.nrs_tbf_rule="start computenodes{192.168.3.161@tcp} 1000"
 lctl set_param ost.OSS.ost_io.nrs_tbf_rule="start fio_user0 {qos_test.0} 1000"
-sh /home/development/Fdm-LustreQoS/batch/install/auto_lustre2.8.0_install.sh --skip_install_kernel
 sh /home/development/Fdm-LustreQoS/batch/uninstall/auto_lustre2.8.0_uninstall.sh --skip_uninstall_kernel
 #centos7修改主机名
 hostnamectl --static set-hostname
@@ -101,10 +98,13 @@ rm -rf /root/kernel/rpmbuild/BUILD/lustre-2.8.0/*
 
 cd /home/development/Fdm-LustreQoS/batch
 
+scp -rp home/development/Fdm-LustreQoS root@192.168.122.101:/home/development/
 scp root@192.168.122.101:/home/development/Fdm-LustreQoS/source/install/* /home/development/Fdm-LustreQoS/source/install/
-scp -rp root@192.168.3.181:/home/development/Fdm-LustreQoS /home/development/
 sh /home/development/Fdm-LustreQoS/batch/ctrl/multexu.sh --iptable=nodes_all.out --cmd='rm -rf /home/development/Fdm-LustreQoS'
 sh /home/development/Fdm-LustreQoS/batch/ctrl/multexu.sh --iptable=nodes_all.out --sendfile=/home/development/Fdm-LustreQoS --location=/home/development/
+sh /home/development/Fdm-LustreQoS/batch/install/auto_lustre2.8.0_install.sh --skip_install_kernel=1
+sh /home/development/Fdm-LustreQoS/batch/deploy/auto_lustre2.8.0_deploy.sh --mdsnode=192.168.122.15 --devname=/dev/vda --devindex=7
+
 sh /home/development/Fdm-LustreQoS/batch/ctrl/multexu.sh --iptable=nodes_all.out --cmd='echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts'
 sh /home/development/Fdm-LustreQoS/batch/ctrl/multexu.sh --iptable=nodes_all.out --cmd='echo "::1         localhost localhost.localdomain localhost6 localhost6.localdomain6" >> /etc/hosts'
 sh /home/development/Fdm-LustreQoS/batch/ctrl/multexu.sh --iptable=nodes_all.out --cmd='rm -f /etc/hostfile && touch /etc/hostfile'
@@ -161,7 +161,7 @@ sh /home/development/Fdm-LustreQoS/batch/ctrl/multexu.sh --iptable=nodes_all.out
 sh /home/development/Fdm-LustreQoS/batch/ctrl/multexu.sh --iptable=nodes_all.out --cmd='dmesg --clear'
 sh /home/development/Fdm-LustreQoS/batch/ctrl/multexu.sh --iptable=nodes_oss.out --cmd='dmesg'
 sh /home/development/Fdm-LustreQoS/batch/ctrl/multexu.sh --iptable=nodes_oss.out --cmd='lctl set_param ost.OSS.ost_io.nrs_tbf_tw_interval="start sscdt 1000"'
-sh /home/development/Fdm-LustreQoS/batch/ctrl/multexu.sh --iptable=nodes_oss.out --cmd='cat /proc/fs/lustre/ost/OSS/ost_io/stats'
+sh /home/development/Fdm-LustreQoS/batch/ctrl/multexu.sh --iptable=nodes_oss.out --cmd='cat /proc/fs/lustre/ost/OSS/ost_io/stats' | grep 'bandwidth'
  
  
 scp *.war root@123.206.16.241:/home/development/java/appBase

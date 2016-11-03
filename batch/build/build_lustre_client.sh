@@ -22,6 +22,8 @@ else
 fi
 
 source "${MULTEXU_BATCH_CRTL_DIR}/multexu_lib.sh"
+clear_execute_statu_signal
+
 #
 #if you login in the system as root, after this command,then you will enter /root directory
 #
@@ -130,6 +132,7 @@ sh ${MULTEXU_BATCH_BUILD_DIR}/_patch_metric.sh
 make rpms -j8
 print_message "MULTEXU_INFO" "finished to make rpms (client) ..."
 `${PAUSE_CMD}`
+send_execute_statu_signal "${MULTEXU_STATUS_EXECUTE}"
 exit 0
 
 

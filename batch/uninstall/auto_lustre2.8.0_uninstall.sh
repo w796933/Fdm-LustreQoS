@@ -68,7 +68,7 @@ sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_client.out --cmd="sh ${M
 
 ssh_check_cluster_status "nodes_all.out" "${MULTEXU_STATUS_EXECUTE}" ${sleeptime} ${limit}
 #清除信号量  避免干扰
-if [ ${skip_uninstall_kernel} -eq 0 ];then 
+if [ ${skip_uninstall_kernel} -eq 1 ];then 
     sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_all.out --cmd="sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --clear_execute_statu_signal"
     #卸载lustre新内核
     sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=nodes_all.out --cmd="sh ${MULTEXU_BATCH_UNINSTALL_DIR}/lustre_uninstall_newkernel.sh"
