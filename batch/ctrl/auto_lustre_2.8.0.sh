@@ -263,6 +263,6 @@ end_time=$(date +%s%N)
 end_time_ms=${end_time:0:16}
 #scale=6
 time_cost=0
-time_cost=`echo "scale=6;($end_time_ms - $start_time_ms)/1000000"` 
+time_cost=`echo "scale=6;($end_time_ms - $start_time_ms)/1000000" | bc` 
 print_message "MULTEXU_INFO" "Process compile-->install-->deploy lustre 2.8.0 finished..."
 print_message "MULTEXU_INFO" "Total time spent:${time_cost} s"
