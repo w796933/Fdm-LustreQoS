@@ -110,7 +110,7 @@ fi
 echo '%_topdir %(echo $HOME)/kernel/rpmbuild' > ~/.rpmmacros
 rpm -ivh ${MULTEXU_SOURCE_DIR}/build/lustre-client-2.8.0-3.10.0_327.3.1.el7.x86_64.src.rpm  2>&1 | grep -v exist
 wait
-print_message "MULTEXU_INFO" "Now start to rpmbuild  lustre(server)..."
+print_message "MULTEXU_INFO" "Now start to rpmbuild  lustre(client)..."
 
 cd "${BUILD_BASE_DIR}"
 rpmbuild -bp --target=`uname -m` ./SPECS/lustre.spec

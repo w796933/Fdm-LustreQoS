@@ -1417,6 +1417,14 @@ typedef enum {
 } ost_cmd_t;
 #define OST_FIRST_OPC  OST_REPLY
 
+/*ost bandwidth*/
+typedef enum {
+    OST_BANDWIDTH_READ       =  0,
+    OST_BANDWIDTH_WRITE      =  1,
+    OST_BANDWIDTH_LAST_OPC
+}ost_bandwidth_t;
+#define OST_BANDWIDTH_FIRST_OPC OST_BANDWIDTH_READ
+
 enum obdo_flags {
         OBD_FL_INLINEDATA   = 0x00000001,
         OBD_FL_OBDMDEXISTS  = 0x00000002,

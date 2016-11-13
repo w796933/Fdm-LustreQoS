@@ -1638,7 +1638,7 @@ static int brw_interpret(const struct lu_env *env,
 	           &aa->aa_oa->o_sent_time,
 	           lustre_msg_get_opc(req->rq_reqmsg) - OST_READ,
 	           req->rq_bulk->bd_nob_transferred);
-
+    printk("qos_adjust:%d\n",req->rq_bulk->bd_nob_transferred);
 	rc = osc_brw_fini_request(req, rc);
 	CDEBUG(D_INODE, "request %p aa %p rc %d\n", req, aa, rc);
 	/* When server return -EINPROGRESS, client should always retry

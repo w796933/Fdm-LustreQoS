@@ -52,14 +52,6 @@ CFS_MODULE_PARM(lprocfs_no_percpu_stats, "i", int, 0644,
 
 #define MAX_STRING_SIZE 128
 
-static struct statistic_data_t  statistic_data = {
-        .last_req_sec = {0,0},
-        .bw_last_sec = {0,0},
-        .sum_bytes_this_sec = {0,0},
-        .max_bw = {0,0},
-        .sum_bytes_before = {0,0},
-};
-
 int lprocfs_single_release(struct inode *inode, struct file *file)
 {
         return single_release(inode, file);
@@ -1258,13 +1250,10 @@ static int lprocfs_stats_seq_show(struct seq_file *p, void *v)
 	struct lprocfs_counter		 ctr;
 	int				 idx	= *(loff_t *)v;
 	int				 rc	= 0;
-    int op = 0;
-    int bytes_transferred=0;
-    struct timeval now;
-    do_gettimeofday(&now);
-    
+      
 	if (idx == 0) {
-		
+		 struct timeval now;
+        do_gettimeofday(&now);
 		rc = seq_printf(p, "%-25s %lu.%lu secs.usecs\n",
 				"snapshot_time", now.tv_sec, now.tv_usec);
 		if (rc < 0)
@@ -1281,43 +1270,28 @@ static int lprocfs_stats_seq_show(struct seq_file *p, void *v)
 			ctr.lc_count, hdr->lc_units);
 	if (rc < 0)
 		goto out;
-
+    
 	if ((hdr->lc_config & LPROCFS_CNTR_AVGMINMAX) && ctr.lc_count > 0) {
-		rc = seq_printf(p, " "LPD64" "LPD64" "LPD64,
-				ctr.lc_min, ctr.lc_max, ctr.lc_sum);
-		if (rc < 0)
-			goto out;
-		if (hdr->lc_config & LPROCFS_CNTR_STDDEV)
-			rc = seq_printf(p, " "LPD64, ctr.lc_sumsquare);
-		if (rc < 0)
-			goto out;
+        
+        if(idx == LUSTRE_MAX_OPCODES || idx == LUSTRE_MAX_OPCODES+1 ) {
+            rc = seq_printf(p, "  last-sample "LPD64"  max "LPD64,
+            ctr.lc_sum, ctr.lc_max);
+            if (rc < 0)
+                goto out;
+            if (hdr->lc_config & LPROCFS_CNTR_STDDEV)
+                rc = seq_printf(p, "  bw-sumsquare "LPD64, ctr.lc_sumsquare);          
+        }else{
+            rc = seq_printf(p, " "LPD64" "LPD64" "LPD64,
+            ctr.lc_min, ctr.lc_max, ctr.lc_sum);
+            if (rc < 0)
+                goto out;
+            if (hdr->lc_config & LPROCFS_CNTR_STDDEV)
+                rc = seq_printf(p, " "LPD64, ctr.lc_sumsquare);
+        }    
+        if (rc < 0)
+            goto out;              
 	}
 	rc = seq_printf(p, "\n");
-    if ( strcmp(hdr->lc_name,"ost_read") == 0 || strcmp(hdr->lc_name,"ost_write") ==0 ) {
-        op = strcmp(hdr->lc_name,"ost_read") == 0 ? 0:1;
-        bytes_transferred=ctr->lc_sum-(statistic_data.sum_bytes_before)[op];
-        if (likely(now.tv_sec == (statistic_data.last_req_sec)[op])) {
-            (statistic_data.sum_bytes_this_sec)[op] += bytes_transferred;
-        } else if (likely(now.tv_sec == (statistic_data.last_req_sec)[op] + 1)) {
-            (statistic_data.bw_last_sec)[op] = (statistic_data.sum_bytes_this_sec)[op];
-            if( (statistic_data.bw_last_sec)[op] > (statistic_data.max_bw)[op] ){
-                (statistic_data.max_bw)[op] = (statistic_data.bw_last_sec)[op];
-            }
-            (statistic_data.last_req_sec)[op] = now.tv_sec;            
-            (statistic_data.sum_bytes_this_sec)[op] = bytes_transferred;
-        } else if (likely(now.tv_sec > (statistic_data.last_req_sec)[op] + 1)) {
-            (statistic_data.bw_last_sec)[op] = 0;
-            (statistic_data.last_req_sec)[op] = now.tv_sec;
-            (statistic_data.sum_bytes_this_sec)[op] = bytes_transferred;
-        }
-        (statistic_data.sum_bytes_before)[op] = ctr->lc_sum;
-        rc = seq_printf(p, "read_bw:"LPD64"\nwrite_bw:"LPD64"\nmax_read_bw:"LPD64"\nmax_write_bw:"LPD64"\n",
-                            (statistic_data.bw_last_sec)[0],
-                            (statistic_data.bw_last_sec)[1],
-                            (statistic_data.max_bw)[0],
-                            (statistic_data.max_bw)[1]
-                            );
-    }
 out:
 	return (rc < 0) ? rc : 0;
 }

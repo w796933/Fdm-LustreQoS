@@ -60,16 +60,6 @@ struct lprocfs_vars {
 	 */
 	mode_t				 proc_mode;
 };
-struct statistic_data_t {
-	/* Following fields are for calculating I/O bandwidth,
-	 * 0 for read, 1 for write */
-	long             last_req_sec[2];       /* second of last request we received */
-	__s64            bw_last_sec[2];        /* bw of last sec */
-	__s64            sum_bytes_this_sec[2]; /* cumulative bytes read within this sec */
-    __s64            max_bw[2]; 
-    __s64            sum_bytes_before[2];
-};
-
 
 /* if we find more consumers this could be generalized */
 #define OBD_HIST_MAX 32
@@ -365,12 +355,13 @@ enum lprocfs_extra_opc {
         MDS_REINT_SETXATTR,
         BRW_READ_BYTES,
         BRW_WRITE_BYTES,
-        //BRW_READ_BANDWIDTH,
-        //BRW_WRITE_BANDWIDTH,
         EXTRA_LAST_OPC
 };
 
 #define EXTRA_FIRST_OPC LDLM_GLIMPSE_ENQUEUE
+
+
+
 /* class_obd.c */
 extern struct proc_dir_entry *proc_lustre_root;
 
@@ -540,12 +531,12 @@ lprocfs_stats_counter_get(struct lprocfs_stats *stats, unsigned int cpuid,
  * count itself to reside within a single cache line.
  */
 extern void lprocfs_counter_add(struct lprocfs_stats *stats, int idx,
-                                long amount);
-extern void lprocfs_calc_bandwidth(struct lprocfs_stats *stats, int idx,
-                                int op_type,long amount);                                                                
+                                long amount);                             
 extern void lprocfs_counter_sub(struct lprocfs_stats *stats, int idx,
                                 long amount);
-
+extern void lprocfs_calc_bandwidth(struct lprocfs_stats *stats, int idx,
+                                long amount);
+                                
 #define lprocfs_counter_incr(stats, idx) \
         lprocfs_counter_add(stats, idx, 1)
 #define lprocfs_counter_decr(stats, idx) \
@@ -941,12 +932,11 @@ extern int lprocfs_quota_wr_qs_factor(struct file *file,
 #else /* !CONFIG_PROC_FS */
 
 #define proc_lustre_root NULL
-
-static inline void lprocfs_counter_add(struct lprocfs_stats *stats,
+static inline void lprocfs_calc_bandwidth(struct lprocfs_stats *stats,
                                        int index, long amount)
 { return; }
-static inline void lprocfs_calc_bandwidth(struct lprocfs_stats *stats,
-                                       int index, int op_type, long amount)
+static inline void lprocfs_counter_add(struct lprocfs_stats *stats,
+                                       int index, long amount)
 { return; }
 static inline void lprocfs_counter_incr(struct lprocfs_stats *stats,
                                         int index)

@@ -41,13 +41,55 @@
 #include <lprocfs_status.h>
 
 #ifdef CONFIG_PROC_FS
-/*
-static struct statistic_data_t  statistic_data = {
-        .last_req_sec = {0,0},
-        .bw_last_sec = {0,0},
-        .sum_bytes_this_sec = {0,0},
-};
-*/
+
+void lprocfs_calc_bandwidth(struct lprocfs_stats *stats, int idx, long amount)
+{
+    struct timeval now;
+    struct lprocfs_counter		*percpu_cntr;
+	struct lprocfs_counter_header	*header;
+	int				smp_id;
+	unsigned long			flags = 0;
+    
+    do_gettimeofday(&now);
+
+	if (stats == NULL)
+		return;
+	LASSERTF(0 <= idx && idx < stats->ls_num,
+		 "idx %d, ls_num %hu\n", idx, stats->ls_num);
+
+	/* With per-client stats, statistics are allocated only for
+	 * single CPU area, so the smp_id should be 0 always. */
+	smp_id = lprocfs_stats_lock(stats, LPROCFS_GET_SMP_ID, &flags);
+	if (smp_id < 0)
+		return;
+
+	header = &stats->ls_cnt_header[idx];
+	percpu_cntr = lprocfs_stats_counter_get(stats, smp_id, idx);
+	percpu_cntr->lc_count++;
+    
+    //percpu_cntr->lc_min is last_req_sec data
+    if (likely(now.tv_sec == percpu_cntr->lc_min)) {
+		percpu_cntr->lc_sum += amount;//amount is bytes_transferred
+		if( percpu_cntr->lc_sum > percpu_cntr->lc_max ) {
+			percpu_cntr->lc_max = percpu_cntr->lc_sum;
+		}
+	} else if ( likely(now.tv_sec == percpu_cntr->lc_min + 1) ) {
+        if( percpu_cntr->lc_sum > percpu_cntr->lc_max ) {
+            percpu_cntr->lc_max = percpu_cntr->lc_sum;
+        }
+        percpu_cntr->lc_sumsquare += (__s64)(percpu_cntr->lc_sum) * (percpu_cntr->lc_sum);
+        percpu_cntr->lc_min = now.tv_sec;
+        percpu_cntr->lc_sum = amount;
+
+	} else if ( likely( now.tv_sec > (percpu_cntr->lc_min + 1) ) ) {
+        percpu_cntr->lc_min = now.tv_sec;
+        percpu_cntr->lc_sum = amount;
+	}    
+        
+	lprocfs_stats_unlock(stats, LPROCFS_GET_SMP_ID, &flags);      
+}
+EXPORT_SYMBOL(lprocfs_calc_bandwidth);
+
 void lprocfs_counter_add(struct lprocfs_stats *stats, int idx, long amount)
 {
 	struct lprocfs_counter		*percpu_cntr;

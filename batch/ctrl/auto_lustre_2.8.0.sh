@@ -52,11 +52,18 @@ devindex=7
 
 #是否需要编译内核
 skip_build_kernel=1
+#直接进入编译环节
+goto_compile=0
+
 while :;
 do
     case $1 in
         --skip_build_kernel=?*)
             skip_build_kernel=${1#*=}
+            shift
+            ;;
+        --goto_compile=?*)
+            goto_compile=${1#*=}
             shift
             ;;
 		-?*)
@@ -76,49 +83,58 @@ print_message "MULTEXU_INFO" "Now start to prepare compiling files..."
 #
 #关闭旧机器 用新的备份节点替换文件 进行全新的安装
 #
+#yum install acpid -y
+if [ ${goto_compile} -eq 0 ];then 
 
-if [ ${skip_build_kernel} -eq 0 ];then 
-    virsh shutdown ${kvm_node_name_dev}
-fi
-for node_lustre in ${kvm_nodes_name_lustre[@]}
-do
-    virsh shutdown ${node_lustre}
-done
-sleep ${sleeptime}s
+    if [ ${skip_build_kernel} -eq 0 ];then 
+        virsh shutdown ${kvm_node_name_dev}
+    fi
+    for node_lustre in ${kvm_nodes_name_lustre[@]}
+    do
+        virsh shutdown ${node_lustre}
+        `${PAUSE_CMD}`
+    done
+    sleep ${sleeptime}s
 
-print_message "MULTEXU_INFO" "Preparing new nodes..."
-#
-#复制备份节点  先关路径根据实际情况配置
-#
-for kvm_source in ${kvm_source_name_lustre[@]}
-do
-    echo yes | cp ${kvm_source_bakpath}/${kvm_source} ${kvm_source_path}/${kvm_source}
-    print_message "MULTEXU_INFO" "cp ${kvm_source_bakpath}/${kvm_source} ${kvm_source_path}/${kvm_source}..."
-    wait
-done
-if [ ${skip_build_kernel} -eq 0 ];then 
-    echo yes | cp ${kvm_source_bakpath}/${kvm_source_name_dev} ${kvm_source_path}/${kvm_source_name_dev}
-    wait
-fi
+    print_message "MULTEXU_INFO" "Preparing new nodes..."
+    #
+    #复制备份节点  先关路径根据实际情况配置
+    #
+    for kvm_source in ${kvm_source_name_lustre[@]}
+    do
+        echo yes | cp ${kvm_source_bakpath}/${kvm_source} ${kvm_source_path}/${kvm_source}
+        print_message "MULTEXU_INFO" "cp ${kvm_source_bakpath}/${kvm_source} ${kvm_source_path}/${kvm_source}..."
+        wait
+    done
+    if [ ${skip_build_kernel} -eq 0 ];then 
+        echo yes | cp ${kvm_source_bakpath}/${kvm_source_name_dev} ${kvm_source_path}/${kvm_source_name_dev}
+        wait
+    fi
 
-virsh start ${kvm_node_name_dev}
-for node_lustre in ${kvm_nodes_name_lustre[@]}
-do
-    virsh start ${node_lustre}
-done
-
-#检测节点是否已经完成启动
-ping_check_singlenode_livestat ${compile_node_ip} "dead"  "${sleeptime}" "${limit}"
-ping_check_cluster_livestat "nodes_all.out" "dead" "${sleeptime}" "${limit}"
-print_message "MULTEXU_INFO" "New nodes are ready..."
+    virsh start ${kvm_node_name_dev}
+    `${PAUSE_CMD}`
+    for node_lustre in ${kvm_nodes_name_lustre[@]}
+    do
+        virsh start ${node_lustre}
+        `${PAUSE_CMD}`
+    done
+    
+    #检测节点是否已经完成启动
+    ping_check_singlenode_livestat ${compile_node_ip} "dead"  "${sleeptime}" "${limit}"
+    ping_check_cluster_livestat "nodes_all.out" "dead" "${sleeptime}" "${limit}"
+    print_message "MULTEXU_INFO" "New nodes are ready..."
 
 `${PAUSE_CMD}`
 `${PAUSE_CMD}`
+
+fi
+
 
 sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --test_host_available=nodes_all.out
 sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --test_host_ssh_enabled=nodes_all.out
 
 #删除旧文件
+print_message "MULTEXU_INFO" "removing the old files..."
 sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=${compile_node_ip} --cmd="rm -rf ${base_dir}/Fdm-LustreQoS"
 sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=${compile_node_ip} --cmd='rm -rf /root/kernel/rpmbuild/BUILD/lustre-2.8.0/*'
 rm -f ${MULTEXU_SOURCE_DIR}/install/lustre-*
@@ -126,6 +142,8 @@ rm -f ${MULTEXU_SOURCE_DIR}/install/lustre-*
 `${PAUSE_CMD}`
 
 #传送新文件到编译节点上
+print_message "MULTEXU_INFO" "distributing the latest files..."
+`${PAUSE_CMD}`
 sh ${MULTEXU_BATCH_CRTL_DIR}/multexu.sh --iptable=${compile_node_ip} --sendfile=${base_dir} --location="$( cd "${base_dir}" && cd ../ && pwd )"
 sleep ${sleeptime}s
 
