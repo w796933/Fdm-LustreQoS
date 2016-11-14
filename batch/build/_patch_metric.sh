@@ -23,6 +23,7 @@ cp ${MULTEXU_SOURCE_DIR}/build/metric/qos_rules.c lustre/osc/
 yes | cp ${MULTEXU_SOURCE_DIR}/build/metric/obd.h lustre/include/
 yes | cp ${MULTEXU_SOURCE_DIR}/build/metric/lprocfs_status.h lustre/include/
 yes | cp ${MULTEXU_SOURCE_DIR}/build/metric/lustre_nrs_tbf.h lustre/include/
+yes | cp ${MULTEXU_SOURCE_DIR}/build/metric/lustre_net.h lustre/include/
 cp ${MULTEXU_SOURCE_DIR}/build/metric/metric.h lustre/include/
 
 #lustre/include/lustre/
@@ -42,7 +43,9 @@ yes | cp ${MULTEXU_SOURCE_DIR}/build/metric/lprocfs_status.c lustre/obdclass/
 yes | cp ${MULTEXU_SOURCE_DIR}/build/metric/lprocfs_counters.c lustre/obdclass/
 
 #lustre/utils/
-yes | cp ${MULTEXU_SOURCE_DIR}/build/metric/lustre_utils_wiretest.c lustre/utils/wiretest.c
+yes | cp ${MULTEXU_SOURCE_DIR}/build/metric/tgt_handler.c lustre/target/
+
+#lustre/target/
 
 #Makefile文件
 yes | cp ${MULTEXU_SOURCE_DIR}/build/metric/Makefile/lustre_include_Makefile.am lustre/include/Makefile.am

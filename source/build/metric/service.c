@@ -2130,13 +2130,13 @@ put_conn:
                 }
 
                 if( opc == OST_READ ){
-                    printk("OST_READ %d\n",request->rq_bulk->bd_nob);
-                   // lprocfs_calc_bandwidth(svc->srv_stats,
-                      //  LUSTRE_MAX_OPCODES + OST_BANDWIDTH_READ,request->rq_bulk->bd_nob_transferred);
+                    printk("OST_READ %d   %d\n",request->rq_bulk->bd_nob,request->rq_bulk->bd_nob_transferred);
+                  //  lprocfs_calc_bandwidth(svc->srv_stats,
+                    //    LUSTRE_MAX_OPCODES + OST_BANDWIDTH_READ,0);
                  }else if( opc == OST_WRITE ){
-                    printk("OST_WRITE %d\n",request->rq_bulk->bd_nob);
+                    printk("OST_WRITE %d   %d\n",request->rq_bulk->bd_nob,request->rq_bulk->bd_nob_transferred);
                    // lprocfs_calc_bandwidth(svc->srv_stats,
-                    //    LUSTRE_MAX_OPCODES + OST_BANDWIDTH_WRITE,request->rq_bulk->bd_nob_transferred);
+                    //    LUSTRE_MAX_OPCODES + OST_BANDWIDTH_WRITE,0);
                  }
 
 

@@ -1172,41 +1172,53 @@ void ptlrpc_lprocfs_rpc_sent(struct ptlrpc_request *req, long amount)
 void ptlrpc_lprocfs_brw(struct ptlrpc_request *req, int bytes)
 {
         struct lprocfs_stats *svc_stats;
-        struct lprocfs_stats *svc_stats_ost;
-        int idx ,idx_ost_bw;
+        int idx;
         
         if (!req->rq_import)
-                return;
-        if (!req->rq_svc_thread->sr_svc_thread){
-            printk("!req->rq_svc_thread->sr_svc_thread\n");
-            return;
-        }
-        svc_stats_ost=req->rq_svc_thread->sr_svc_thread->t_svcpt->scp_service->srv_stats;
-        if(!svc_stats_ost){
-            printk("!svc_stats_ost");
-            return;           
-        }
+                return;   
+            
         svc_stats = req->rq_import->imp_obd->obd_svc_stats;
         if (!svc_stats)
                 return;
         idx = lustre_msg_get_opc(req->rq_reqmsg);
         switch (idx) {
         case OST_READ:
-                idx = BRW_READ_BYTES + PTLRPC_LAST_CNTR;
-                idx_ost_bw = LUSTRE_MAX_OPCODES + OST_BANDWIDTH_READ;
+                idx= LUSTRE_MAX_OPCODES + OST_BANDWIDTH_READ;
                 break;
         case OST_WRITE:
                 idx = BRW_WRITE_BYTES + PTLRPC_LAST_CNTR;
-                idx_ost_bw = LUSTRE_MAX_OPCODES + OST_BANDWIDTH_WRITE;
                 break;
         default:
                 LASSERTF(0, "unsupported opcode %u\n", idx);
                 break;
         }
-        lprocfs_calc_bandwidth(svc_stats_ost,idx_ost_bw,bytes);
         lprocfs_counter_add(svc_stats, idx, bytes);
 }
 EXPORT_SYMBOL(ptlrpc_lprocfs_brw);
+
+void ptlrpc_lprocfs_bandwidth(struct ptlrpc_request *req, int bytes)
+{
+        struct lprocfs_stats *svc_stats;
+        int idx;        
+        
+        svc_stats = ptlrpc_req2svc(req)->srv_stats;
+        if (!svc_stats)
+                return;        
+        idx = lustre_msg_get_opc(req->rq_reqmsg);
+        switch (idx) {
+        case OST_READ:
+                idx = LUSTRE_MAX_OPCODES + OST_BANDWIDTH_READ;
+                break;
+        case OST_WRITE:
+                idx = LUSTRE_MAX_OPCODES + OST_BANDWIDTH_WRITE;
+                break;
+        default:
+                LASSERTF(0, "unsupported opcode %u\n", idx);
+                break;
+        }
+        lprocfs_calc_bandwidth(svc_stats,idx,bytes);
+}
+EXPORT_SYMBOL(ptlrpc_lprocfs_bandwidth);
 
 void ptlrpc_lprocfs_unregister_service(struct ptlrpc_service *svc)
 {

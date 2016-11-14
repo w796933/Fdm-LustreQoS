@@ -48,10 +48,10 @@ void lprocfs_calc_bandwidth(struct lprocfs_stats *stats, int idx, long amount)
     struct lprocfs_counter		*percpu_cntr;
 	struct lprocfs_counter_header	*header;
 	int				smp_id;
-	unsigned long			flags = 0;
+	unsigned long			flags = 0;  
     
     do_gettimeofday(&now);
-
+            
 	if (stats == NULL)
 		return;
 	LASSERTF(0 <= idx && idx < stats->ls_num,
@@ -67,9 +67,11 @@ void lprocfs_calc_bandwidth(struct lprocfs_stats *stats, int idx, long amount)
 	percpu_cntr = lprocfs_stats_counter_get(stats, smp_id, idx);
 	percpu_cntr->lc_count++;
     
-    //percpu_cntr->lc_min is last_req_sec data
+   /*when calculate the bandwidth,because percpu_cntr->lc_min is always 0 
+    *in this case,so percpu_cntr->lc_min is used to save last_req_sec data.*/
     if (likely(now.tv_sec == percpu_cntr->lc_min)) {
-		percpu_cntr->lc_sum += amount;//amount is bytes_transferred
+        /*amount is bytes_transferred*/
+		percpu_cntr->lc_sum += amount;
 		if( percpu_cntr->lc_sum > percpu_cntr->lc_max ) {
 			percpu_cntr->lc_max = percpu_cntr->lc_sum;
 		}

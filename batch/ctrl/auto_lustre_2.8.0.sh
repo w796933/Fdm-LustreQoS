@@ -6,7 +6,8 @@
 #      email:    dengshijun1992@gmail.com
 #       time:    2016-11-02
 #
-#initialization
+#运行本脚本时,假设主控制节点与所有节点(包括编译节点)已经进行SSH认证
+#
 
 sleeptime=60 #设置检测的睡眠时间
 limit=10 #递减下限
@@ -15,6 +16,7 @@ limit=10 #递减下限
 start_time=$(date +%s%N)
 start_time_ms=${start_time:0:16}
 
+#initialization
 cd "$( dirname "${BASH_SOURCE[0]}" )" #get  a Bash script tell what directory it's stored in
 if [ ! -f __init.sh ]; then
 	echo "MULTEXU Error:initialization failure:cannot find the file __init.sh... "
@@ -50,10 +52,24 @@ mdsnode=192.168.122.15
 devname=/dev/vda 
 devindex=7
 
-#是否需要编译内核
+
+#########################################################
+#                   参数选项
+#########################################################
+
+#是否需要编译内核:
+#   skip_build_kernel=1表示不进行内核的编译安装工作,即假设所有节点(包括编译节点)都是安装了Lustre对应内核的;
+#   skip_build_kernel=0表示都是全新的节点,即假设所有节点(包括编译节点)都是没有安装Lustre对应内核;
 skip_build_kernel=1
-#直接进入编译环节
+
+#只进行新节点虚拟机文件的复制 不进行后续工作
+only_pre=0
+
+#直接进入编译环节,不进行新节点虚拟机文件的复制
 goto_compile=0
+
+#是进行lmt安装工作
+install_lmt=1
 
 while :;
 do
@@ -64,6 +80,14 @@ do
             ;;
         --goto_compile=?*)
             goto_compile=${1#*=}
+            shift
+            ;;
+        --only_pre=?*)
+            only_pre=${1#*=}
+            shift
+            ;;
+        --install_lmt=?*)
+            install_lmt=${1#*=}
             shift
             ;;
 		-?*)
@@ -129,9 +153,19 @@ if [ ${goto_compile} -eq 0 ];then
 
 fi
 
-
 sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --test_host_available=nodes_all.out
 sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --test_host_ssh_enabled=nodes_all.out
+
+if [ ${only_pre} -eq 1 ];then
+    #计算程序运行的时间
+    end_time=$(date +%s%N)
+    end_time_ms=${end_time:0:16}
+    #scale=6
+    time_cost=0
+    time_cost=`echo "scale=6;($end_time_ms - $start_time_ms)/1000000" | bc` 
+    print_message "MULTEXU_INFO" "Total time spent:${time_cost} s"
+    exit 0
+fi
 
 #删除旧文件
 print_message "MULTEXU_INFO" "removing the old files..."
@@ -270,12 +304,16 @@ done
 print_message "MULTEXU_INFO" "the current node finished to execute auto_lustre2.8.0_deploy.sh..."
 
 sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --clear_execute_statu_signal
-#安装lmt
-sh ${MULTEXU_BATCH_LMT_DIR}/lmt_install.sh --mdsnode=${mdsnode}
-local_check_status "${MULTEXU_STATUS_EXECUTE}"  "${sleeptime}" "${limit}"
-print_message "MULTEXU_INFO" "the current node is finished to execute lmt_install.sh..."
 
-sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --clear_execute_statu_signal
+#安装lmt
+if [ ${install_lmt} -eq 1 ];then
+    sh ${MULTEXU_BATCH_LMT_DIR}/lmt_install.sh --mdsnode=${mdsnode}
+    local_check_status "${MULTEXU_STATUS_EXECUTE}"  "${sleeptime}" "${limit}"
+    print_message "MULTEXU_INFO" "the current node  finished to execute lmt_install.sh..."
+
+    sh ${MULTEXU_BATCH_CRTL_DIR}/multexu_ssh.sh  --clear_execute_statu_signal
+fi
+
 #计算程序运行的时间
 end_time=$(date +%s%N)
 end_time_ms=${end_time:0:16}
