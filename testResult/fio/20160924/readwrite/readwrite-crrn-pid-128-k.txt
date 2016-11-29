@@ -1,0 +1,75 @@
+/home/sscdt/Feedback-driven-Monitor/source/tool/fio/fio -directory=/mnt/lustre/test -direct=0 -iodepth 5 -thread -rw=readwrite -rwmixread=50 -allow_mounted_write=1 -ioengine=libaio -bs=128k -size=1G -numjobs=40 -runtime=900 -group_reporting -name=sscdt_test 
+
+sscdt_test: (groupid=0, jobs=40): err= 0: pid=12139: Tue Sep 20 23:24:27 2016
+  read : io=20532MB, bw=87974KB/s, iops=687, runt=238991msec
+    slat (usec): min=38, max=4723.8K, avg=17512.57, stdev=119916.45
+    clat (usec): min=3, max=5805.6K, avg=100470.50, stdev=253375.23
+     lat (usec): min=56, max=6753.8K, avg=117983.06, stdev=307107.34
+    clat percentiles (usec):
+     |  1.00th=[  298],  5.00th=[  390], 10.00th=[  438], 20.00th=[  490],
+     | 30.00th=[  532], 40.00th=[  596], 50.00th=[  708], 60.00th=[14912],
+     | 70.00th=[76288], 80.00th=[150528], 90.00th=[272384], 95.00th=[436224],
+     | 99.00th=[1253376], 99.50th=[1728512], 99.90th=[2834432], 99.95th=[3227648],
+     | 99.99th=[4292608]
+  write: io=20428MB, bw=87526KB/s, iops=683, runt=238991msec
+    slat (usec): min=79, max=4336.4K, avg=31442.21, stdev=84286.08
+    clat (usec): min=4, max=5551.6K, avg=95066.25, stdev=246653.08
+     lat (usec): min=120, max=5817.6K, avg=126508.46, stdev=274060.90
+    clat percentiles (usec):
+     |  1.00th=[  302],  5.00th=[  398], 10.00th=[  442], 20.00th=[  494],
+     | 30.00th=[  548], 40.00th=[  612], 50.00th=[  732], 60.00th=[ 5728],
+     | 70.00th=[71168], 80.00th=[142336], 90.00th=[257024], 95.00th=[411648],
+     | 99.00th=[1220608], 99.50th=[1712128], 99.90th=[2801664], 99.95th=[3227648],
+     | 99.99th=[4423680]
+    lat (usec) : 4=0.01%, 10=0.01%, 20=0.01%, 100=0.01%, 250=0.15%
+    lat (usec) : 500=21.48%, 750=29.89%, 1000=5.03%
+    lat (msec) : 2=2.05%, 4=0.68%, 10=0.68%, 20=1.04%, 50=4.82%
+    lat (msec) : 100=8.47%, 250=14.82%, 500=7.00%, 750=1.68%, 1000=0.77%
+    lat (msec) : 2000=1.10%, >=2000=0.33%
+  cpu          : usr=0.04%, sys=1.24%, ctx=362946, majf=0, minf=27450
+  IO depths    : 1=0.1%, 2=0.1%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued    : total=r=164258/w=163422/d=0, short=r=0/w=0/d=0, drop=r=0/w=0/d=0
+     latency   : target=0, window=0, percentile=100.00%, depth=5
+
+Run status group 0 (all jobs):
+   READ: io=20532MB, aggrb=87974KB/s, minb=87974KB/s, maxb=87974KB/s, mint=238991msec, maxt=238991msec
+  WRITE: io=20428MB, aggrb=87526KB/s, minb=87526KB/s, maxb=87526KB/s, mint=238991msec, maxt=238991msec
+
+sscdt_test: (groupid=0, jobs=40): err= 0: pid=12128: Tue Sep 20 23:25:07 2016
+  read : io=20532MB, bw=77881KB/s, iops=608, runt=269963msec
+    slat (usec): min=42, max=6561.1K, avg=16301.87, stdev=130645.58
+    clat (usec): min=3, max=7302.8K, avg=124833.65, stdev=286282.22
+     lat (usec): min=60, max=7499.5K, avg=141135.52, stdev=336426.40
+    clat percentiles (usec):
+     |  1.00th=[  298],  5.00th=[  390], 10.00th=[  438], 20.00th=[  494],
+     | 30.00th=[  548], 40.00th=[  604], 50.00th=[  732], 60.00th=[16768],
+     | 70.00th=[114176], 80.00th=[214016], 90.00th=[366592], 95.00th=[536576],
+     | 99.00th=[1253376], 99.50th=[1843200], 99.90th=[3227648], 99.95th=[3981312],
+     | 99.99th=[5537792]
+  write: io=20428MB, bw=77485KB/s, iops=605, runt=269963msec
+    slat (usec): min=84, max=6957.4K, avg=45587.35, stdev=109367.79
+    clat (usec): min=4, max=7615.6K, avg=121879.01, stdev=285484.84
+     lat (usec): min=132, max=7876.7K, avg=167466.36, stdev=327154.30
+    clat percentiles (usec):
+     |  1.00th=[  302],  5.00th=[  394], 10.00th=[  442], 20.00th=[  502],
+     | 30.00th=[  556], 40.00th=[  628], 50.00th=[  764], 60.00th=[14144],
+     | 70.00th=[110080], 80.00th=[205824], 90.00th=[358400], 95.00th=[518144],
+     | 99.00th=[1236992], 99.50th=[1892352], 99.90th=[3293184], 99.95th=[3883008],
+     | 99.99th=[5341184]
+    lat (usec) : 4=0.01%, 10=0.01%, 20=0.01%, 100=0.01%, 250=0.20%
+    lat (usec) : 500=20.27%, 750=29.73%, 1000=5.41%
+    lat (msec) : 2=2.81%, 4=0.65%, 10=0.52%, 20=0.76%, 50=2.46%
+    lat (msec) : 100=5.69%, 250=14.79%, 500=11.16%, 750=3.08%, 1000=0.99%
+    lat (msec) : 2000=1.05%, >=2000=0.42%
+  cpu          : usr=0.03%, sys=1.04%, ctx=474192, majf=0, minf=70239
+  IO depths    : 1=0.1%, 2=0.1%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued    : total=r=164258/w=163422/d=0, short=r=0/w=0/d=0, drop=r=0/w=0/d=0
+     latency   : target=0, window=0, percentile=100.00%, depth=5
+
+Run status group 0 (all jobs):
+   READ: io=20532MB, aggrb=77881KB/s, minb=77881KB/s, maxb=77881KB/s, mint=269963msec, maxt=269963msec
+  WRITE: io=20428MB, aggrb=77484KB/s, minb=77484KB/s, maxb=77484KB/s, mint=269963msec, maxt=269963msec
